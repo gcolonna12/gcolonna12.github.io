@@ -1,0 +1,7 @@
+main:
+  - title: "Thinking"
+    url: "/thinking/"
+  # - title: "Misc"
+  #   url: "/misc/"
+  - title: "About"
+    url: "/about/"

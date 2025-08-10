@@ -1,0 +1,107 @@
+---
+# Only the main Sass file needs front matter
+---
+@import "minimal-mistakes/skins/air"; // skin
+@import "minimal-mistakes";          // theme
+
+/* Custom styles (optional). The theme and skin are loaded via remote_theme.
+   Add overrides below if needed. */
+
+/* Nav: align links left and remove large invisible separator spacing */
+.greedy-nav {
+  .visible-links {
+    justify-content: flex-start !important; /* was flex-end */
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .visible-links li { margin: 0; }
+
+  a {
+    margin: 0 0.5rem 0 0; /* tighter gap only to the right */
+  }
+
+  .visible-links li:last-child a { margin-right: 0; }
+  
+  .visible-links a:before { display: none !important; }
+}
+
+/* Nav active state: normal weight by default, bold when current */
+.greedy-nav a { font-weight: normal; }
+.greedy-nav a.current { font-weight: 700; }
+.site-title { font-weight: normal !important; }
+
+/* Content links: blue, underline on hover */
+.page__content a {
+  color: #1a73e8;
+  text-decoration: none;
+  border-bottom: none;
+  box-shadow: none;
+}
+
+.page__content a:hover,
+.page__content a:focus {
+  text-decoration: underline;
+}
+
+/* Modern nav styling */
+:root {
+  --nav-bg: rgba(255,255,255,0.7);
+  --nav-blur: 12px;
+  --nav-border: rgba(0,0,0,0.06);
+  --nav-link: #111;
+  --nav-link-hover: #1a73e8;
+}
+
+.masthead {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: var(--nav-bg);
+  -webkit-backdrop-filter: saturate(180%) blur(var(--nav-blur));
+  backdrop-filter: saturate(180%) blur(var(--nav-blur));
+  border-bottom: 1px solid var(--nav-border);
+}
+
+.greedy-nav {
+  padding: 0.4rem 0.75rem;
+
+  .site-title {
+    font-weight: 700 !important;
+    letter-spacing: 0.2px;
+  }
+
+  a {
+    color: var(--nav-link);
+    font-weight: 500;
+    padding: 0.35rem 0.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: color .2s ease, background-color .2s ease, background-size .25s ease;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 0% 2px; /* animated underline */
+  }
+
+  a:hover, a:focus {
+    color: var(--nav-link-hover);
+    background-size: 100% 2px;
+  }
+
+  a.current {
+    color: var(--nav-link-hover);
+    background-color: rgba(26,115,232,0.08);
+  }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --nav-bg: rgba(18,18,18,0.6);
+    --nav-border: rgba(255,255,255,0.08);
+    --nav-link: #eaeaea;
+    --nav-link-hover: #8ab4f8;
+  }
+}

@@ -1,0 +1,74 @@
+title: "Gianni Colonna"
+masthead_title: "Home"
+
+name: "Gianni Colonna"
+description: "Personal site"
+url: "https://gianni1298.github.io"
+baseurl: ""
+
+# Minimal Mistakes via GitHub Pages remote theme
+remote_theme: "mmistakes/minimal-mistakes"
+minimal_mistakes_skin: "default" # options: air, contrast, dark, dirt, mint, neon, sunrise
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-include-cache
+  - jekyll-remote-theme
+
+markdown: kramdown
+kramdown:
+  math_engine: mathjax
+
+# Author profile
+author:
+  name: "Gianni Colonna"
+  avatar: "/assets/images/logo.svg"
+  bio: "Engineer. Curious mind."
+  location: ""
+  links:
+    - label: "GitHub"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/Gianni1298"
+
+# Navigation (defined in _data/navigation.yml)
+# See: https://mmistakes.github.io/minimal-mistakes/docs/navigation/
+
+# Collections (for posts)
+collections:
+  posts:
+    output: true
+    permalink: /:categories/:year/:month/:day/:title/
+
+# Defaults applied to pages & posts
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: single
+      classes: "wide"
+      author_profile: false
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: single
+      author_profile: true
+      read_time: true
+      comments: false
+
+# permalink structure
+permalink: /:title/
+
+# Exclusions
+exclude:
+  - README.md
+  - node_modules
+  - _site
+  - .sass-cache
+  - .jekyll-cache
+  - .jekyll-metadata
+  - vendor
+  - package-lock.json
+  - package.json

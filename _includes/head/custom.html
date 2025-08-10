@@ -1,0 +1,383 @@
+<!-- Custom head elements (kept minimal) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root { 
+    --mm-font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, sans-serif; 
+    /* Site width controls */
+    --site-max: 760px;
+    --site-pad: 24px;
+  }
+  /* Keep page background white */
+  html, body { background: #fff; }
+
+    article, aside, details, figcaption, figure, footer, header, hgroup, main, nav, section {
+        display: contents;
+    }
+
+  /* Hide footer entirely */
+  .page__footer { display: none !important; background: #fff !important; box-shadow: none !important; }
+  .page__footer a { color: inherit !important; }
+
+  /* Constrain and center main containers */
+  .masthead__inner-wrap,
+  
+  .initial-content {
+    width: min(100%, var(--site-max));
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--site-pad);
+    padding-right: var(--site-pad);
+  }
+
+  /* Remove theme's extra inner padding so content aligns with site title */
+  #main { padding-left: 0; padding-right: 0; }
+
+  .page__inner-wrap {
+    width: 100%;
+    max-width: none;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  
+  .page__content { max-width: 100%; }
+
+  /* Left-align title, meta and content so text starts under site title */
+  .page__title,
+  .page__meta,
+  .page__content { text-align: left !important; }
+
+  /* Ensure nav links and content respect the centered width */
+  .greedy-nav { max-width: 100%; }
+
+  /* Optional: avoid overly wide images/code blocks */
+  .page__content img,
+  .page__content pre,
+  .page__content code,
+  .page__content table { max-width: 100%; }
+
+  /* Mobile keeps natural full width with padding */
+  @media (max-width: 480px) {
+    :root { --site-pad: 16px; }
+  }
+
+  /* OG link preview card styles */
+  .og-card { 
+    border: 1px solid #e5e7eb; 
+    border-radius: 12px; 
+    overflow: hidden; 
+    background: #fff; 
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    margin: 12px 0; 
+  }
+  .og-card > a { 
+    display: grid; 
+    grid-template-columns: 160px 1fr; 
+    gap: 0; 
+    color: inherit; 
+    text-decoration: none; 
+  }
+  .og-card__thumb { 
+    background-size: cover; 
+    background-position: center; 
+    min-height: 120px; 
+  }
+  .og-card__body { 
+    padding: 12px 14px; 
+    display: grid; 
+    align-content: start; 
+    gap: 6px; 
+  }
+  .og-card__title { 
+    font-weight: 600; 
+    line-height: 1.3; 
+    color: #111827; 
+    overflow: hidden; 
+    display: -webkit-box; 
+    -webkit-line-clamp: 2; 
+    line-clamp: 2;
+    -webkit-box-orient: vertical; 
+  }
+  .og-card__desc { 
+    font-size: 0.95rem; 
+    color: #4b5563; 
+    line-height: 1.4; 
+    overflow: hidden; 
+    display: -webkit-box; 
+    -webkit-line-clamp: 3; 
+    line-clamp: 3;
+    -webkit-box-orient: vertical; 
+  }
+  .og-card__domain { 
+    font-size: 0.85rem; 
+    color: #6b7280; 
+  }
+  /* Tags row under each card */
+  .og-card__tags { 
+    margin-top: 2px; 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 6px; 
+  }
+  .og-chip { 
+    border: 1px solid #e5e7eb; 
+    background: #f8fafc; 
+    color: #374151; 
+    padding: 2px 8px; 
+    border-radius: 9999px; 
+    font-size: 0.8rem; 
+    line-height: 1.6; 
+    cursor: pointer; 
+  }
+  .og-chip:hover { 
+    background: #eff6ff; 
+    border-color: #dbeafe; 
+    color: #1f2937; 
+  }
+  /* Filter chip styles */
+  .og-filter__chip { font-weight: 500; }
+  .og-filter__chip.--active { background: #111827; color: #fff; border-color: #111827; }
+
+  /* Filter toolbar */
+  .og-filter { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    flex-wrap: wrap; 
+    margin: 8px 0 16px; 
+    padding: 8px 10px; 
+    background: #fafafa; 
+    border: 1px solid #efefef; 
+    border-radius: 10px; 
+  }
+  .og-filter__title { 
+    font-weight: 600; 
+    color: #374151; 
+    margin-right: 4px; 
+  }
+  .og-filter__item { 
+    display: inline-flex; 
+    align-items: center; 
+    gap: 6px; 
+    padding: 2px 8px; 
+    border-radius: 9999px; 
+  }
+  .og-filter__item.--active { 
+    background: #f3f4f6; 
+  }
+  .og-filter__item input { 
+    accent-color: #111827; 
+  }
+
+  /* Compact layout when no image */
+  .og-card.--noimg > a { grid-template-columns: 1fr; }
+  .og-card.--noimg .og-card__body { padding: 14px; }
+
+  @media (max-width: 600px) {
+    .og-card > a { grid-template-columns: 120px 1fr; }
+    .og-card__thumb { min-height: 96px; }
+  }
+</style>
+
+<script>
+  // Highlight current nav link (including Home/site-title) by adding .current
+  document.addEventListener('DOMContentLoaded', function () {
+    try {
+      var normalize = function (p) {
+        if (!p) return '/';
+        // remove any index.html
+        p = p.replace(/index\.html$/i, '');
+        // ensure leading slash
+        if (p[0] !== '/') p = '/' + p;
+        // ensure trailing slash except root
+        if (p !== '/' && !p.endsWith('/')) p += '/';
+        return p;
+      };
+
+      var currentPath = normalize(window.location.pathname);
+      var nav = document.getElementById('site-nav');
+      if (!nav) return;
+
+      var links = nav.querySelectorAll('a[href]');
+      var matched = false;
+      links.forEach(function (a) {
+        try {
+          var u = new URL(a.getAttribute('href'), window.location.origin);
+          var hrefPath = normalize(u.pathname);
+          if (hrefPath === currentPath) {
+            a.classList.add('current');
+            matched = true;
+          }
+        } catch (e) { /* ignore */ }
+      });
+
+      // If no match (e.g., a page not in menu) leave all unbolded.
+      // Home will only be bold when on root via matching above.
+    } catch (e) { /* noop */ }
+  });
+</script>
+
+<script>
+  // Notion-like link preview cards using Open Graph via Microlink API
+  document.addEventListener('DOMContentLoaded', function () {
+    try {
+      // Only run on the Thinking page (permalink /thinking/)
+      if (!/\/thinking\/?$/.test(location.pathname)) return;
+
+      var anchors = Array.from(document.querySelectorAll('a.og-embed, [data-og-embed]'));
+      if (!anchors.length) return;
+
+      // Accumulate tags across cards
+      var allTags = new Set();
+
+      var toCard = function(meta, url, tags) {
+        var title = (meta && (meta.title || (meta.data && meta.data.title))) || url;
+        var desc = (meta && (meta.description || (meta.data && meta.data.description))) || '';
+        var image = (meta && (meta.image && (meta.image.url || meta.image))) || (meta && meta.data && meta.data.image && (meta.data.image.url || meta.data.image));
+        var domain = (function(u){ try { return new URL(u).hostname.replace(/^www\./,''); } catch(e) { return ''; } })(url);
+        var displayTags = (tags || []).map(function(t){ return t; });
+        var storeTags = displayTags.map(function(t){ return t; });
+
+        var card = document.createElement('div');
+        card.className = 'og-card' + (image ? '' : ' --noimg');
+        if (storeTags.length) card.dataset.tags = storeTags.join(',');
+
+        var a = document.createElement('a');
+        a.href = url; a.target = '_blank'; a.rel = 'noopener';
+
+        if (image) {
+          var thumb = document.createElement('div');
+          thumb.className = 'og-card__thumb';
+          thumb.style.backgroundImage = 'url("' + image + '")';
+          a.appendChild(thumb);
+        }
+
+        var body = document.createElement('div');
+        body.className = 'og-card__body';
+        var t = document.createElement('div'); t.className = 'og-card__title'; t.textContent = title; body.appendChild(t);
+        if (desc) { var d = document.createElement('div'); d.className = 'og-card__desc'; d.textContent = desc; body.appendChild(d); }
+        if (domain) { var dm = document.createElement('div'); dm.className = 'og-card__domain'; dm.textContent = domain; body.appendChild(dm); }
+
+        if (displayTags.length) {
+          var tagsWrap = document.createElement('div');
+          tagsWrap.className = 'og-card__tags';
+          displayTags.forEach(function(tag, idx) {
+            var chip = document.createElement('button');
+            chip.type = 'button';
+            chip.className = 'og-chip';
+            chip.dataset.tag = storeTags[idx] || tag;
+            chip.textContent = tag;
+            tagsWrap.appendChild(chip);
+          });
+          body.appendChild(tagsWrap);
+        }
+
+        a.appendChild(body);
+        card.appendChild(a);
+        return card;
+      };
+
+      var fetchMeta = function(url) {
+        var api = 'https://api.microlink.io?audio=false&video=false&iframe=false&palette=false&url=' + encodeURIComponent(url);
+        return fetch(api, { mode: 'cors' }).then(function(r){ return r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)); });
+      };
+
+      var container = document.querySelector('.page__content') || document.getElementById('main') || document.body;
+
+      // Filter logic
+      var applyFilter = function(selected) {
+        var sel = (selected || '');
+        var cards = Array.from(container.querySelectorAll('.og-card'));
+        cards.forEach(function(card){
+          var tags = (card.dataset.tags || '').split(',').filter(Boolean);
+          var show = !sel || tags.includes(sel);
+          card.style.display = show ? '' : 'none';
+        });
+        // Update active state on chips
+        var chips = container.querySelectorAll('.og-filter__chip');
+        chips.forEach(function(chip){
+          var val = (chip.dataset.tag || '');
+          if (val === sel) chip.classList.add('--active'); else chip.classList.remove('--active');
+        });
+      };
+
+      var insertFilterBar = function() {
+        if (!allTags.size) return;
+        var tags = Array.from(allTags).sort();
+        var filter = document.createElement('div');
+        filter.className = 'og-filter';
+        var title = document.createElement('span'); title.className = 'og-filter__title'; title.textContent = ''; filter.appendChild(title);
+
+        var makeChip = function(label, value, active) {
+          var chip = document.createElement('button');
+          chip.type = 'button';
+          chip.className = 'og-chip og-filter__chip' + (active ? ' --active' : '');
+          chip.dataset.tag = (value || '');
+          chip.textContent = label;
+          return chip;
+        };
+
+        filter.appendChild(makeChip('All', '', true));
+        tags.forEach(function(tag){ filter.appendChild(makeChip(tag, tag, false)); });
+
+        // Insert at top of content
+        if (container.firstChild) {
+          container.insertBefore(filter, container.firstChild);
+        } else {
+          container.appendChild(filter);
+        }
+        
+        // Click to filter via toolbar chips
+        filter.addEventListener('click', function(e){
+          var chip = e.target.closest ? e.target.closest('.og-filter__chip') : null;
+          if (chip) {
+            applyFilter(chip.dataset.tag || '');
+          }
+        });
+
+        // Clicking a card chip sets the filter (and prevents navigating the link)
+        container.addEventListener('click', function(e){
+          var chip = e.target.closest ? e.target.closest('.og-card .og-chip') : null;
+          if (chip && chip.dataset && chip.dataset.tag) {
+            if (e.preventDefault) e.preventDefault();
+            if (e.stopPropagation) e.stopPropagation();
+            applyFilter(chip.dataset.tag);
+          }
+        });
+      };
+
+      // Process anchors sequentially to be polite
+      (function next(i){
+        if (i >= anchors.length) { insertFilterBar(); return; }
+        var el = anchors[i];
+        var url = el.getAttribute('href') || el.getAttribute('data-og-embed');
+        var rawTags = (el.getAttribute('data-tags') || '').trim();
+        var tagsArr = rawTags ? rawTags.split(/[,]+/).map(function(t){ return t.replace(/^#/, '').trim(); }).filter(Boolean) : [];
+        tagsArr.forEach(function(t){ allTags.add(t); });
+        if (!url) { next(i+1); return; }
+        fetchMeta(url).then(function(res){
+          var meta = (res && (res.data || res));
+          var card = toCard(meta, url, tagsArr);
+          el.replaceWith(card);
+        }).catch(function(){
+          // Fallback: leave the original link in place but still add data-tags for filtering
+          if (tagsArr.length) el.setAttribute('data-tags', tagsArr.join(','));
+        }).finally(function(){ next(i+1); });
+      })(0);
+
+     } catch (e) { /* ignore */ }
+   });
+ </script>
+
+<!-- MathJax configuration for LaTeX rendering -->
+{% if page.mathjax or site.mathjax %}
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']]
+    }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+{% endif %}
