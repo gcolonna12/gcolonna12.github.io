@@ -29,5 +29,5 @@ Throughout my journey, I’ve been fortunate to learn from numerous mentors who 
 
 Feel free to browse [my blog posts]({{ '/thinking/' | relative_url }}) to learn more.
 
-[Contact](www.linkedin.com/in/gianpi-colonna) 
+[Contact](https://www.linkedin.com/in/gianpi-colonna) 
 
