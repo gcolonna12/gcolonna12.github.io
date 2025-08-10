@@ -47,8 +47,8 @@
 
 /* Modern nav styling */
 :root {
-  --nav-bg: rgba(255,255,255,0.7);
-  --nav-blur: 12px;
+  --nav-bg: transparent; /* match page background (no overlay) */
+  --nav-blur: 0px;
   --nav-border: rgba(0,0,0,0.06);
   --nav-link: #111;
   --nav-link-hover: #1a73e8;
@@ -58,13 +58,14 @@
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: var(--nav-bg);
-  -webkit-backdrop-filter: saturate(180%) blur(var(--nav-blur));
-  backdrop-filter: saturate(180%) blur(var(--nav-blur));
+  background: transparent; /* same as page background */
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
   border-bottom: 1px solid var(--nav-border);
 }
 
 .greedy-nav {
+  background: transparent; /* override theme's #eee */
   padding: 0.4rem 0.75rem;
 
   .site-title {
@@ -92,16 +93,32 @@
 
   a.current {
     color: var(--nav-link-hover);
-    background-color: rgba(26,115,232,0.08);
+    /* keep highlight if desired; remove next line to keep totally flat */
+    /* background-color: rgba(26,115,232,0.08); */
+    background-color: transparent;
   }
+}
+
+/* Ensure navbar background matches page background */
+.masthead,
+.masthead .greedy-nav,
+.masthead__inner-wrap .greedy-nav {
+  background: transparent !important;
+  background-color: transparent !important;
 }
 
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   :root {
-    --nav-bg: rgba(18,18,18,0.6);
+    --nav-bg: transparent;
     --nav-border: rgba(255,255,255,0.08);
     --nav-link: #eaeaea;
     --nav-link-hover: #8ab4f8;
+  }
+
+  .masthead {
+    background: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }
