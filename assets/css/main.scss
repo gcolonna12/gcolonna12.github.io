@@ -107,13 +107,28 @@
   background-color: transparent !important;
 }
 
-/* Dark mode */
+/* Mobile menu/toggle: ensure link and icon colors are consistent */
+.greedy-nav {
+  /* site title color */
+  .site-title, .site-title a { color: var(--nav-link) !important; }
+
+  /* items that move into the overflow (mobile) menu */
+  .hidden-links a { color: var(--nav-link) !important; }
+  .hidden-links a:hover,
+  .hidden-links a:focus { color: var(--nav-link-hover) !important; }
+
+  /* hamburger icon + bars */
+  .greedy-nav__toggle { color: var(--nav-link) !important; }
+  .navicon, .navicon:before, .navicon:after { background: var(--nav-link) !important; }
+}
+
+/* Dark mode: keep nav colors the same so they don't flip to white on mobile */
 @media (prefers-color-scheme: dark) {
   :root {
     --nav-bg: transparent;
-    --nav-border: rgba(255,255,255,0.08);
-    --nav-link: #eaeaea;
-    --nav-link-hover: #8ab4f8;
+    --nav-border: rgba(0,0,0,0.06);
+    --nav-link: #111;          /* keep dark text */
+    --nav-link-hover: #1a73e8; /* keep same hover */
   }
 
   .masthead {
@@ -121,38 +136,4 @@
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
-}
-
-/* Mobile: make nav look like desktop (theme forces white text on small screens) */
-@media screen and (max-width: 64em) {
-  /* Link colors */
-  .masthead .greedy-nav a,
-  .masthead .greedy-nav .visible-links a,
-  .masthead .greedy-nav .hidden-links a,
-  .masthead .masthead__menu-item > a {
-    color: var(--nav-link) !important;
-  }
-
-  .masthead .greedy-nav a:hover,
-  .masthead .greedy-nav a:focus,
-  .masthead .greedy-nav .visible-links a:hover,
-  .masthead .greedy-nav .hidden-links a:hover,
-  .masthead .masthead__menu-item > a:hover {
-    color: var(--nav-link-hover) !important;
-  }
-
-  /* Hamburger/toggle icon */
-  .greedy-nav__toggle { color: var(--nav-link) !important; }
-  .greedy-nav__toggle:hover { color: var(--nav-link-hover) !important; }
-  .greedy-nav__toggle .icon { fill: currentColor !important; }
-
-  /* Dropdown panel */
-  .greedy-nav .hidden-links {
-    background: var(--nav-bg) !important;
-    box-shadow: none !important;
-    border: 1px solid var(--nav-border);
-  }
-
-  /* Remove decorative bar in dropdown items if present */
-  .greedy-nav .hidden-links a:before { display: none !important; }
 }
