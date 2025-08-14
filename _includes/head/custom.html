@@ -2,6 +2,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+<!-- Speed up OG card requests -->
+<link rel="preconnect" href="https://api.microlink.io">
+<link rel="dns-prefetch" href="https://api.microlink.io">
+
 <style>
   :root { 
     --mm-font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, sans-serif; 
@@ -228,9 +233,20 @@
       var anchors = Array.from(document.querySelectorAll('a.og-embed, [data-og-embed]'));
       if (!anchors.length) return;
 
-      // Accumulate tags across cards
+      // Upfront tags collection so we can render the filter bar immediately
       var allTags = new Set();
+      anchors.forEach(function (el) {
+        var rawTags = (el.getAttribute('data-tags') || '').trim();
+        var tagsArr = rawTags
+          ? rawTags.split(/[,]+/).map(function (t) { return t.replace(/^#/, '').trim(); }).filter(Boolean)
+          : [];
+        el.__ogTags = tagsArr; // store on element for later
+        tagsArr.forEach(function (t) { allTags.add(t); });
+      });
 
+      var container = document.querySelector('.page__content') || document.getElementById('main') || document.body;
+
+      // Build card DOM
       var toCard = function(meta, url, tags) {
         var title = (meta && (meta.title || (meta.data && meta.data.title))) || url;
         var desc = (meta && (meta.description || (meta.data && meta.data.description))) || '';
@@ -278,12 +294,47 @@
         return card;
       };
 
-      var fetchMeta = function(url) {
-        var api = 'https://api.microlink.io?audio=false&video=false&iframe=false&palette=false&url=' + encodeURIComponent(url);
-        return fetch(api, { mode: 'cors' }).then(function(r){ return r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)); });
+      // Cache helpers (localStorage)
+      var CACHE_NS = 'og:meta:';
+      var CACHE_TTL = 1000 * 60 * 60 * 24 * 3; // 3 days
+
+      var getCache = function (url) {
+        try {
+          var raw = localStorage.getItem(CACHE_NS + url);
+          if (!raw) return null;
+          var obj = JSON.parse(raw);
+          if (Date.now() - obj.t > CACHE_TTL) {
+            localStorage.removeItem(CACHE_NS + url);
+            return null;
+          }
+          return obj.d;
+        } catch (e) { return null; }
       };
 
-      var container = document.querySelector('.page__content') || document.getElementById('main') || document.body;
+      var setCache = function (url, data) {
+        try {
+          localStorage.setItem(CACHE_NS + url, JSON.stringify({ t: Date.now(), d: data }));
+        } catch (e) { /* ignore quota */ }
+      };
+
+      // Fetch OG meta (with timeout + cache)
+      var fetchMeta = function(url) {
+        var cached = getCache(url);
+        if (cached) return Promise.resolve(cached);
+
+        var api = 'https://api.microlink.io?audio=false&video=false&iframe=false&palette=false&url=' + encodeURIComponent(url);
+        var ctrl = (window.AbortController ? new AbortController() : null);
+        var timer = setTimeout(function(){ if (ctrl) ctrl.abort(); }, 6000);
+
+        return fetch(api, { mode: 'cors', signal: ctrl && ctrl.signal })
+          .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+          .then(function(res){
+            var data = (res && (res.data || res));
+            setCache(url, data);
+            return data;
+          })
+          .finally(function(){ clearTimeout(timer); });
+      };
 
       // Filter logic
       var applyFilter = function(selected) {
@@ -294,7 +345,6 @@
           var show = !sel || tags.includes(sel);
           card.style.display = show ? '' : 'none';
         });
-        // Update active state on chips
         var chips = container.querySelectorAll('.og-filter__chip');
         chips.forEach(function(chip){
           var val = (chip.dataset.tag || '');
@@ -302,6 +352,7 @@
         });
       };
 
+      // Insert filter bar immediately (no need to wait for fetches)
       var insertFilterBar = function() {
         if (!allTags.size) return;
         var tags = Array.from(allTags).sort();
@@ -321,22 +372,16 @@
         filter.appendChild(makeChip('All', '', true));
         tags.forEach(function(tag){ filter.appendChild(makeChip(tag, tag, false)); });
 
-        // Insert at top of content
-        if (container.firstChild) {
-          container.insertBefore(filter, container.firstChild);
-        } else {
-          container.appendChild(filter);
-        }
-        
+        if (container.firstChild) container.insertBefore(filter, container.firstChild);
+        else container.appendChild(filter);
+
         // Click to filter via toolbar chips
         filter.addEventListener('click', function(e){
           var chip = e.target.closest ? e.target.closest('.og-filter__chip') : null;
-          if (chip) {
-            applyFilter(chip.dataset.tag || '');
-          }
+          if (chip) applyFilter(chip.dataset.tag || '');
         });
 
-        // Clicking a card chip sets the filter (and prevents navigating the link)
+        // Clicking a card chip sets the filter
         container.addEventListener('click', function(e){
           var chip = e.target.closest ? e.target.closest('.og-card .og-chip') : null;
           if (chip && chip.dataset && chip.dataset.tag) {
@@ -347,28 +392,32 @@
         });
       };
 
-      // Process anchors sequentially to be polite
-      (function next(i){
-        if (i >= anchors.length) { insertFilterBar(); return; }
-        var el = anchors[i];
+      insertFilterBar();
+
+      // Concurrency-limited processing of anchors
+      var MAX_CONCURRENCY = 6;
+      var i = 0;
+
+      function worker() {
+        if (i >= anchors.length) return Promise.resolve();
+        var el = anchors[i++];
         var url = el.getAttribute('href') || el.getAttribute('data-og-embed');
-        var rawTags = (el.getAttribute('data-tags') || '').trim();
-        var tagsArr = rawTags ? rawTags.split(/[,]+/).map(function(t){ return t.replace(/^#/, '').trim(); }).filter(Boolean) : [];
-        tagsArr.forEach(function(t){ allTags.add(t); });
-        if (!url) { next(i+1); return; }
-        fetchMeta(url).then(function(res){
-          var meta = (res && (res.data || res));
+        var tagsArr = el.__ogTags || [];
+        if (!url) return worker();
+
+        return fetchMeta(url).then(function(meta){
           var card = toCard(meta, url, tagsArr);
           el.replaceWith(card);
         }).catch(function(){
-          // Fallback: leave the original link in place but still add data-tags for filtering
+          // Fallback: keep original link; still add data-tags for filtering
           if (tagsArr.length) el.setAttribute('data-tags', tagsArr.join(','));
-        }).finally(function(){ next(i+1); });
-      })(0);
+        }).then(worker);
+      }
 
-     } catch (e) { /* ignore */ }
-   });
- </script>
+      Promise.all(Array.from({ length: Math.min(MAX_CONCURRENCY, anchors.length) }, worker));
+    } catch (e) { /* ignore */ }
+  });
+</script>
 
 <!-- MathJax configuration for LaTeX rendering -->
 {% if page.mathjax or site.mathjax %}
