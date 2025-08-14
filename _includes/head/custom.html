@@ -294,34 +294,9 @@
         return card;
       };
 
-      // Cache helpers (localStorage)
-      var CACHE_NS = 'og:meta:';
-      var CACHE_TTL = 1000 * 60 * 60 * 24 * 3; // 3 days
-
-      var getCache = function (url) {
-        try {
-          var raw = localStorage.getItem(CACHE_NS + url);
-          if (!raw) return null;
-          var obj = JSON.parse(raw);
-          if (Date.now() - obj.t > CACHE_TTL) {
-            localStorage.removeItem(CACHE_NS + url);
-            return null;
-          }
-          return obj.d;
-        } catch (e) { return null; }
-      };
-
-      var setCache = function (url, data) {
-        try {
-          localStorage.setItem(CACHE_NS + url, JSON.stringify({ t: Date.now(), d: data }));
-        } catch (e) { /* ignore quota */ }
-      };
 
       // Fetch OG meta (with timeout + cache)
       var fetchMeta = function(url) {
-        var cached = getCache(url);
-        if (cached) return Promise.resolve(cached);
-
         var api = 'https://api.microlink.io?audio=false&video=false&iframe=false&palette=false&url=' + encodeURIComponent(url);
         var ctrl = (window.AbortController ? new AbortController() : null);
         var timer = setTimeout(function(){ if (ctrl) ctrl.abort(); }, 6000);
@@ -330,7 +305,6 @@
           .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
           .then(function(res){
             var data = (res && (res.data || res));
-            setCache(url, data);
             return data;
           })
           .finally(function(){ clearTimeout(timer); });
