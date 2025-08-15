@@ -224,6 +224,16 @@
 </script>
 
 <script>
+  // Map exact URLs (preferably without query) or hostnames to local assets under /assets/og/
+  // Example:
+  // window.OG_IMAGE_OVERRIDES = {
+  //   'https://docs.google.com/presentation/d/e/2PACX-1vRpbygPjpPH1dG14ZbKt-al-DOltYoxbDI6YcnXmc-ufH0GI56ENECrLE1kQScFXKSIHTHdbeImhvC7/pub': '/assets/og/intro-to-kubernetes.png',
+  //   'medium.com': '/assets/og/medium.png'
+  // };
+  window.OG_IMAGE_OVERRIDES = window.OG_IMAGE_OVERRIDES || {};
+</script>
+
+<script>
   // Notion-like link preview cards using Open Graph via Microlink API
   document.addEventListener('DOMContentLoaded', function () {
     try {
@@ -246,11 +256,40 @@
 
       var container = document.querySelector('.page__content') || document.getElementById('main') || document.body;
 
+      // Override resolver (per-link attribute or global map)
+      function normalizeUrl(u) {
+        try { var x = new URL(u, location.origin); x.hash=''; x.search=''; return x.toString(); }
+        catch(e){ return u; }
+      }
+      function resolveOverride(u, el) {
+        // Per-link attribute wins
+        var attr = (el && (el.getAttribute('data-image') || el.getAttribute('data-og-image')));
+        if (attr) return attr;
+
+        var map = (window.OG_IMAGE_OVERRIDES || {});
+        var urlObj; try { urlObj = new URL(u, location.origin); } catch(e){}
+
+        // Exact URL without query/hash
+        var exact = map[normalizeUrl(u)];
+        if (exact) return exact;
+
+        if (urlObj) {
+          var noQuery = urlObj.origin + urlObj.pathname;
+          if (map[noQuery]) return map[noQuery];
+          if (map[urlObj.hostname]) return map[urlObj.hostname];
+        }
+        return null;
+      }
+
+
       // Build card DOM
-      var toCard = function(meta, url, tags) {
+      var toCard = function(meta, url, tags, overrideImage) {
         var title = (meta && (meta.title || (meta.data && meta.data.title))) || url;
         var desc = (meta && (meta.description || (meta.data && meta.data.description))) || '';
-        var image = (meta && (meta.image && (meta.image.url || meta.image))) || (meta && meta.data && meta.data.image && (meta.data.image.url || meta.data.image));
+        // Prefer override image when provided
+        var image = overrideImage ||
+                    (meta && (meta.image && (meta.image.url || meta.image))) ||
+                    (meta && meta.data && meta.data.image && (meta.data.image.url || meta.data.image));
         var domain = (function(u){ try { return new URL(u).hostname.replace(/^www\./,''); } catch(e) { return ''; } })(url);
         var displayTags = (tags || []).map(function(t){ return t; });
         var storeTags = displayTags.map(function(t){ return t; });
@@ -379,10 +418,19 @@
         var tagsArr = el.__ogTags || [];
         if (!url) return worker();
 
+        // Use per-link or global override if available
+        var overrideImg = resolveOverride(url, el);
+
         return fetchMeta(url).then(function(meta){
-          var card = toCard(meta, url, tagsArr);
+          var card = toCard(meta, url, tagsArr, overrideImg);
           el.replaceWith(card);
         }).catch(function(){
+          // If fetch fails but we have an override, still render a card
+          if (overrideImg) {
+            var card = toCard({}, url, tagsArr, overrideImg);
+            el.replaceWith(card);
+            return;
+          }
           // Fallback: keep original link; still add data-tags for filtering
           if (tagsArr.length) el.setAttribute('data-tags', tagsArr.join(','));
         }).then(worker);
