@@ -174,6 +174,20 @@
   .og-filter__item input { 
     accent-color: #111827; 
   }
+    /* Footer row: domain (left) + author (right) */
+  .og-card__footer {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .og-card__author {
+    font-size: 0.85rem;
+    color: #6b7280;
+    text-align: right;
+    white-space: nowrap;
+  }
 
   /* Compact layout when no image */
   .og-card.--noimg > a { grid-template-columns: 1fr; }
@@ -231,6 +245,14 @@
   //   'medium.com': '/assets/og/medium.png'
   // };
   window.OG_IMAGE_OVERRIDES = window.OG_IMAGE_OVERRIDES || {};
+
+  // Optional author overrides. Map exact URLs or hostnames to an author string.
+  // Example:
+  // window.OG_AUTHOR_OVERRIDES = {
+  //   'https://example.com/some-post': 'Jane Doe',
+  //   'medium.com': 'Medium Author'
+  // };
+  window.OG_AUTHOR_OVERRIDES = window.OG_AUTHOR_OVERRIDES || {};
 </script>
 
 <script>
@@ -261,7 +283,7 @@
         try { var x = new URL(u, location.origin); x.hash=''; x.search=''; return x.toString(); }
         catch(e){ return u; }
       }
-      function resolveOverride(u, el) {
+      function resolveImgOverride(u, el) {
         // Per-link attribute wins
         var attr = (el && (el.getAttribute('data-image') || el.getAttribute('data-og-image')));
         if (attr) return attr;
@@ -281,9 +303,30 @@
         return null;
       }
 
+      // Resolve author overrides (per-link attribute or global map)
+      function resolveAuthorOverride(u, el) {
+        // Per-link attribute wins
+        var attr = (el && (el.getAttribute('data-author') || el.getAttribute('data-og-author')));
+        if (attr) return attr;
+
+        var map = (window.OG_AUTHOR_OVERRIDES || {});
+        var urlObj; try { urlObj = new URL(u, location.origin); } catch(e){}
+
+        // Exact URL without query/hash
+        var exact = map[normalizeUrl(u)];
+        if (exact) return exact;
+
+        if (urlObj) {
+          var noQuery = urlObj.origin + urlObj.pathname;
+          if (map[noQuery]) return map[noQuery];
+          if (map[urlObj.hostname]) return map[urlObj.hostname];
+        }
+        return '';
+      }
+
 
       // Build card DOM
-      var toCard = function(meta, url, tags, overrideImage) {
+      var toCard = function(meta, url, tags, overrideImage, overrideAuthor) {
         var title = (meta && (meta.title || (meta.data && meta.data.title))) || url;
         var desc = (meta && (meta.description || (meta.data && meta.data.description))) || '';
         // Prefer override image when provided
@@ -291,6 +334,7 @@
                     (meta && (meta.image && (meta.image.url || meta.image))) ||
                     (meta && meta.data && meta.data.image && (meta.data.image.url || meta.data.image));
         var domain = (function(u){ try { return new URL(u).hostname.replace(/^www\./,''); } catch(e) { return ''; } })(url);
+        var author = overrideAuthor || (meta && (meta.author || (meta.data && meta.data.author))) || '';
         var displayTags = (tags || []).map(function(t){ return t; });
         var storeTags = displayTags.map(function(t){ return t; });
 
@@ -312,7 +356,8 @@
         body.className = 'og-card__body';
         var t = document.createElement('div'); t.className = 'og-card__title'; t.textContent = title; body.appendChild(t);
         if (desc) { var d = document.createElement('div'); d.className = 'og-card__desc'; d.textContent = desc; body.appendChild(d); }
-        if (domain) { var dm = document.createElement('div'); dm.className = 'og-card__domain'; dm.textContent = domain; body.appendChild(dm); }
+        // if (domain) { var dm = document.createElement('div'); dm.className = 'og-card__domain'; dm.textContent = domain; body.appendChild(dm); }
+
 
         if (displayTags.length) {
           var tagsWrap = document.createElement('div');
@@ -326,6 +371,17 @@
             tagsWrap.appendChild(chip);
           });
           body.appendChild(tagsWrap);
+        }
+
+        // Footer with domain (left) and author (right)
+        if (domain || author) {
+          var footer = document.createElement('div');
+          footer.className = 'og-card__footer';
+          var dm = document.createElement('div'); dm.className = 'og-card__domain'; dm.textContent = domain || '';
+          var au = document.createElement('div'); au.className = 'og-card__author'; au.textContent = author || '';
+          footer.appendChild(dm);
+          footer.appendChild(au);
+          body.appendChild(footer);
         }
 
         a.appendChild(body);
@@ -419,15 +475,16 @@
         if (!url) return worker();
 
         // Use per-link or global override if available
-        var overrideImg = resolveOverride(url, el);
+        var overrideImg = resolveImgOverride(url, el);
+        var overrideAuthor = resolveAuthorOverride(url, el);
 
         return fetchMeta(url).then(function(meta){
-          var card = toCard(meta, url, tagsArr, overrideImg);
+          var card = toCard(meta, url, tagsArr, overrideImg, overrideAuthor);
           el.replaceWith(card);
         }).catch(function(){
           // If fetch fails but we have an override, still render a card
           if (overrideImg) {
-            var card = toCard({}, url, tagsArr, overrideImg);
+            var card = toCard({}, url, tagsArr, overrideImg, overrideAuthor);
             el.replaceWith(card);
             return;
           }
