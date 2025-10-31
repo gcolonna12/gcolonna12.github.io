@@ -1,0 +1,49 @@
+cards:
+  "https://medium.com/data-science-collective/can-ai-ever-be-truly-fair-the-impossible-quest-for-algorithmic-fairness-72fcb6dfd210":
+    title: "Can AI Ever Be Truly Fair? The Impossible Quest for Algorithmic Fairness"
+    description: "Why fairness in AI is always a trade-off — and what that means for us"
+    image: "/assets/og/ai-fairness.jpg"
+    domain: "medium.com"
+    author: "Gianpi Colonna"
+    
+  "https://medium.com/data-science-collective/how-to-earn-1-million-with-aws-in-one-year-b03218b25ab3":
+    title: "How to Earn $1 Million with AWS in One Year"
+    description: "Slash your AWS cloud costs by 90%! Learn 4 steps to optimize spending: challenge assumptions, tune resources, use Graviton instances, and…"
+    image: "/assets/og/aws-cost-optimization.jpg"
+    domain: "medium.com"
+    author: "Gianpi Colonna"
+    
+  "https://medium.com/@gianpiero.colonna/arthur-schopenhauer-a-brief-overview-1a80318d4323":
+    title: "Arthur Schopenhauer: A Brief Overview"
+    description: "Human life oscillates like a pendulum between pain and boredom, passing through brief moments of pleasure"
+    image: "/assets/og/schopenhauer.jpg"
+    domain: "medium.com"
+    author: "Gianpi Colonna"
+    
+  "https://medium.com/@gianpiero.colonna/chaos-theory-a-brief-introduction-f2127a54f6a8":
+    title: "Chaos Theory: A Brief Introduction"
+    description: "Exploring Chaos Theory: Unveiling Complexity in Science and Nature"
+    image: "/assets/og/chaos-theory.png"
+    domain: "medium.com"
+    author: "Gianpi Colonna"
+    
+  "https://medium.com/data-science-collective/the-perils-of-misusing-dropduplicates-in-data-frames-267be4308504":
+    title: "The Perils of Misusing drop_duplicates() in Data Frames"
+    description: "In the realm of data handling, a common need is to filter out repeated rows of data. Among the methods available for this, dropDuplicates()…"
+    image: "/assets/og/drop-duplicates.jpg"
+    domain: "medium.com"
+    author: "Gianpi Colonna"
+    
+  "https://medium.com/data-science/optimizing-output-file-size-in-apache-spark-5ce28784934c":
+    title: "Optimizing Output File Size in Apache Spark"
+    description: "A Comprehensive Guide on Managing Partitions, Repartition, and Coealesce Operations"
+    image: "/assets/og/spark-partitions.jpg"
+    domain: "medium.com"
+    author: "Gianpi Colonna"
+    
+  "https://docs.google.com/presentation/d/e/2PACX-1vRpbygPjpPH1dG14ZbKt-al-DOltYoxbDI6YcnXmc-ufH0GI56ENECrLE1kQScFXKSIHTHdbeImhvC7/pub":
+    title: "Introduction to Kubernetes"
+    description: "An intro to Kubernetes What is it? Why do we need it? How does it work? By Gianpi Colonna"
+    image: "/assets/og/intro-to-kubernetes.png"
+    domain: "docs.google.com"
+    author: "Gianpi Colonna"

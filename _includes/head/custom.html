@@ -276,7 +276,22 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 <script>
-  // Notion-like link preview cards using Open Graph via Microlink API
+  // Local OG cache data from Jekyll
+  window.OG_CACHE = {
+    {% for card in site.data.og_cache.cards %}
+    {{ card[0] | jsonify }}: {
+      title: {{ card[1].title | jsonify }},
+      description: {{ card[1].description | jsonify }},
+      image: {{ card[1].image | jsonify }},
+      domain: {{ card[1].domain | jsonify }},
+      author: {{ card[1].author | jsonify }}
+    }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  };
+</script>
+
+<script>
+  // Notion-like link preview cards using hybrid cache + API approach
   document.addEventListener('DOMContentLoaded', function () {
     try {
       // Only run on the Thinking page (permalink /thinking/)
@@ -410,8 +425,28 @@ document.addEventListener('DOMContentLoaded', function () {
       };
 
 
-      // Fetch OG meta (with timeout + cache)
+      // Hybrid cache + API fetch for OG meta
       var fetchMeta = function(url) {
+        // First, check local cache
+        var cached = window.OG_CACHE && window.OG_CACHE[url];
+        if (cached) {
+          console.log('✅ Cache hit for:', url);
+          return Promise.resolve({
+            title: cached.title,
+            description: cached.description,
+            image: cached.image,
+            author: cached.author,
+            data: {
+              title: cached.title,
+              description: cached.description,
+              image: cached.image,
+              author: cached.author
+            }
+          });
+        }
+
+        // Fallback to API if not in cache
+        console.log('🌐 Cache miss, fetching from API:', url);
         var api = 'https://api.microlink.io?audio=false&video=false&iframe=false&palette=false&url=' + encodeURIComponent(url);
         var ctrl = (window.AbortController ? new AbortController() : null);
         var timer = setTimeout(function(){ if (ctrl) ctrl.abort(); }, 6000);
@@ -420,6 +455,7 @@ document.addEventListener('DOMContentLoaded', function () {
           .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
           .then(function(res){
             var data = (res && (res.data || res));
+            console.log('📡 API response for:', url, data);
             return data;
           })
           .finally(function(){ clearTimeout(timer); });
