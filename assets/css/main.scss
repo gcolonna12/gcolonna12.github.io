@@ -58,14 +58,14 @@
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: transparent; /* same as page background */
+  background: #fff; /* same as page background */
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
   border-bottom: 1px solid var(--nav-border);
 }
 
 .greedy-nav {
-  background: transparent; /* override theme's #eee */
+  background: #fff; /* override theme's #eee */
   padding: 0.4rem 0.75rem;
 
   .site-title {
@@ -99,13 +99,6 @@
   }
 }
 
-/* Ensure navbar background matches page background */
-.masthead,
-.masthead .greedy-nav,
-.masthead__inner-wrap .greedy-nav {
-  background: transparent !important;
-  background-color: transparent !important;
-}
 
 /* Mobile menu/toggle: ensure link and icon colors are consistent */
 .greedy-nav {
