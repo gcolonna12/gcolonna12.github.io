@@ -18,4 +18,4 @@ permalink: /thinking/
 
 [Optimise File Size in Spark](https://medium.com/data-science/optimizing-output-file-size-in-apache-spark-5ce28784934c){:.og-embed}{:.og-embed data-tags="Data Engineering"}
 
-[Intro To Kubernetes](https://docs.google.com/presentation/d/e/2PACX-1vRpbygPjpPH1dG14ZbKt-al-DOltYoxbDI6YcnXmc-ufH0GI56ENECrLE1kQScFXKSIHTHdbeImhvC7/pub?start=true&loop=true&delayms=3000){:.og-embed}{:.og-embed data-tags="Infrastructure"}{:.og-embed data-image="/assets/og/intro-to-kubernetes.png"}{:.og-embed data-author="Gianpi Colonna"}
+[Intro To Kubernetes](https://docs.google.com/presentation/d/e/2PACX-1vRmqB0nU6X08jFBu1oQjPOGoq22OA0LbVOFn-cLyky_jzaUyoWRpzYsM4EQzzGBBQ/pub?start=false&loop=false&delayms=3000&slide=id.p1){:.og-embed}{:.og-embed data-tags="Infrastructure"}{:.og-embed data-image="/assets/og/intro-to-kubernetes.png"}{:.og-embed data-author="Gianpi Colonna"}
