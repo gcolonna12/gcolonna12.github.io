@@ -62,3 +62,10 @@ cards:
     image: "/assets/og/intro-to-ml.png"
     domain: "docs.google.com"
     author: "Gianpi Colonna"
+
+  "https://docs.google.com/presentation/d/e/2PACX-1vScW3CpV4q910ZhvFlyId2UgbHhAiHjlPDrMCX05FNYUfOrcxdwdzKWHC3WUF3Frg/pub?start=false&loop=false&delayms=3000":
+    title: "ML for Anomaly Detection"
+    description: "An overview of machine learning techniques for anomaly detection."
+    image: "/assets/og/ml-for-anomaly-detection.png"
+    domain: "docs.google.com"
+    author: "Gianpi Colonna"

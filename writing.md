@@ -10,6 +10,9 @@ permalink: /writing/
 
 [Intro To Kubernetes](https://docs.google.com/presentation/d/e/2PACX-1vRmqB0nU6X08jFBu1oQjPOGoq22OA0LbVOFn-cLyky_jzaUyoWRpzYsM4EQzzGBBQ/pub?start=false&loop=false&delayms=3000&slide=id.p1){:.og-embed}{:.og-embed data-tags="Infrastructure"}{:.og-embed data-image="/assets/og/intro-to-kubernetes.png"}{:.og-embed data-author="Gianpi Colonna"}
 
+[ML for Anomaly Detection](https://docs.google.com/presentation/d/e/2PACX-1vScW3CpV4q910ZhvFlyId2UgbHhAiHjlPDrMCX05FNYUfOrcxdwdzKWHC3WUF3Frg/pub?start=false&loop=false&delayms=3000){:.og-embed}{:.og-embed data-tags="AI & ML"}
+
+
 [Optimise costs with AWS](https://medium.com/data-science-collective/how-to-earn-1-million-with-aws-in-one-year-b03218b25ab3){:.og-embed}{:.og-embed data-tags="Infrastructure"}
 
 [Chaos Theory](https://medium.com/@gianpiero.colonna/chaos-theory-a-brief-introduction-f2127a54f6a8){:.og-embed}{:.og-embed data-tags="Science"}
