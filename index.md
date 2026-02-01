@@ -27,7 +27,7 @@ My work in the team has spanned designing and deploying high-performance machine
 
 Throughout my journey, I’ve been fortunate to learn from numerous mentors who have shaped not only my technical abilities but also my way of thinking. I hope to share what I've learned with others. 
 
-Feel free to browse [my blog posts]({{ '/thinking/' | relative_url }}) to learn more.
+Feel free to browse [my blog posts]({{ '/writing/' | relative_url }}) to learn more.
 
 [Contact](https://www.linkedin.com/in/gianpi-colonna) 
 

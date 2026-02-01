@@ -41,9 +41,15 @@ cards:
     domain: "medium.com"
     author: "Gianpi Colonna"
     
-  "https://docs.google.com/presentation/d/e/2PACX-1vRpbygPjpPH1dG14ZbKt-al-DOltYoxbDI6YcnXmc-ufH0GI56ENECrLE1kQScFXKSIHTHdbeImhvC7/pub":
-    title: "Introduction to Kubernetes"
+  "https://docs.google.com/presentation/d/e/2PACX-1vRmqB0nU6X08jFBu1oQjPOGoq22OA0LbVOFn-cLyky_jzaUyoWRpzYsM4EQzzGBBQ/pub?start=false&loop=false&delayms=3000&slide=id.p1":
+    title: "Intro To Kubernetes"
     description: "An intro to Kubernetes What is it? Why do we need it? How does it work? By Gianpi Colonna"
     image: "/assets/og/intro-to-kubernetes.png"
     domain: "docs.google.com"
     author: "Gianpi Colonna"
+
+  "https://gcolonna.notion.site/practical-machine-learning":
+    title: "Practical Machine Learning"
+    description: "A catalog of practical machine learning design patterns."
+    image: "/assets/og/practical_machine_learning.jpg"
+    domain: "gcolonna.notion.site"
