@@ -53,3 +53,12 @@ cards:
     description: "A catalog of practical machine learning design patterns."
     image: "/assets/og/practical_machine_learning.jpg"
     domain: "gcolonna.notion.site"
+    author: "Gianpi Colonna"
+
+
+  "https://docs.google.com/presentation/d/e/2PACX-1vT7tzIUaYVOP4YpQNrb1tP-6uJPeCyuvwAMejf6vAS1Mt5jcSfsqNvmh3BCMOFyrg/pub?start=false&loop=false&delayms=3000&slide=id.p1":
+    title: "A zero-hype intro to Machine Learning and AI"
+    description: "Beginner intro to Machine Learning and AI concepts, algorithms, and applications."
+    image: "/assets/og/intro-to-ml.png"
+    domain: "docs.google.com"
+    author: "Gianpi Colonna"

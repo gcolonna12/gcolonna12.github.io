@@ -18,6 +18,8 @@ permalink: /writing/
 
 [Optimise File Size in Spark](https://medium.com/data-science/optimizing-output-file-size-in-apache-spark-5ce28784934c){:.og-embed}{:.og-embed data-tags="Data Engineering"}
 
+[A Zero-Hype Intro To Machine Learning and AI](https://docs.google.com/presentation/d/e/2PACX-1vT7tzIUaYVOP4YpQNrb1tP-6uJPeCyuvwAMejf6vAS1Mt5jcSfsqNvmh3BCMOFyrg/pub?start=false&loop=false&delayms=3000&slide=id.p1){:.og-embed}{:.og-embed data-tags="AI & ML"}
+
 [Schopenhauer](https://medium.com/@gianpiero.colonna/arthur-schopenhauer-a-brief-overview-1a80318d4323){:.og-embed}{:.og-embed data-tags="Philosophy"}
 
 
