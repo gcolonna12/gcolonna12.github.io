@@ -90,10 +90,10 @@
     color: inherit; 
     text-decoration: none; 
   }
-  .og-card__thumb { 
-    background-size: cover; 
-    background-position: center; 
-    min-height: 120px; 
+  .og-card__thumb {
+    background-size: cover;
+    background-position: center;
+    min-height: 120px;
   }
   .og-card__body { 
     padding: 12px 14px; 
@@ -151,17 +151,24 @@
   .og-filter__chip { font-weight: 500; }
   .og-filter__chip.--active { background: #111827; color: #fff; border-color: #111827; }
 
+  /* Filter wrapper for multiple filter bars */
+  .og-filters-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
   /* Filter toolbar */
-  .og-filter { 
-    display: flex; 
-    align-items: center; 
-    gap: 10px; 
-    flex-wrap: wrap; 
-    margin: 8px 0 16px; 
-    padding: 8px 10px; 
-    background: #fafafa; 
-    border: 1px solid #efefef; 
-    border-radius: 10px; 
+  .og-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 8px 10px;
+    background: #fafafa;
+    border: 1px solid #efefef;
+    border-radius: 10px;
   }
   .og-filter__title { 
     font-weight: 600; 
@@ -195,6 +202,11 @@
     text-align: right;
     white-space: nowrap;
   }
+  .og-card__date {
+    font-size: 0.85rem;
+    color: #9ca3af;
+    white-space: nowrap;
+  }
 
   /* Compact layout when no image */
   .og-card.--noimg > a { grid-template-columns: 1fr; }
@@ -202,7 +214,6 @@
 
   @media (max-width: 600px) {
     .og-card > a { grid-template-columns: 120px 1fr; }
-    .og-card__thumb { min-height: 96px; }
   }
 </style>
 
@@ -304,8 +315,9 @@ document.addEventListener('DOMContentLoaded', function () {
       var anchors = Array.from(document.querySelectorAll('a.og-embed, [data-og-embed]'));
       if (!anchors.length) return;
 
-      // Upfront tags collection so we can render the filter bar immediately
+      // Upfront tags and categories collection so we can render filter bars immediately
       var allTags = new Set();
+      var allCategories = new Set();
       anchors.forEach(function (el) {
         var rawTags = (el.getAttribute('data-tags') || '').trim();
         var tagsArr = rawTags
@@ -313,6 +325,12 @@ document.addEventListener('DOMContentLoaded', function () {
           : [];
         el.__ogTags = tagsArr; // store on element for later
         tagsArr.forEach(function (t) { allTags.add(t); });
+
+        var category = (el.getAttribute('data-category') || '').trim();
+        if (category) {
+          el.__ogCategory = category;
+          allCategories.add(category);
+        }
       });
 
       var container = document.querySelector('.page__content') || document.getElementById('main') || document.body;
@@ -365,7 +383,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
       // Build card DOM
-      var toCard = function(meta, url, tags, overrideImage, overrideAuthor) {
+      var toCard = function(meta, url, tags, overrideImage, overrideAuthor, dateStr, category) {
         var title = (meta && (meta.title || (meta.data && meta.data.title))) || url;
         var desc = (meta && (meta.description || (meta.data && meta.data.description))) || '';
         // Prefer override image when provided
@@ -380,6 +398,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var card = document.createElement('div');
         card.className = 'og-card' + (image ? '' : ' --noimg');
         if (storeTags.length) card.dataset.tags = storeTags.join(',');
+        if (category) card.dataset.category = category;
 
         var a = document.createElement('a');
         a.href = url; a.target = '_blank'; a.rel = 'noopener';
@@ -412,14 +431,18 @@ document.addEventListener('DOMContentLoaded', function () {
           body.appendChild(tagsWrap);
         }
 
-        // Footer with domain (left) and author (right)
-        if (domain || author) {
+        // Footer with category + domain (left) and date/author (right)
+        if (domain || author || dateStr || category) {
           var footer = document.createElement('div');
           footer.className = 'og-card__footer';
-          var dm = document.createElement('div'); dm.className = 'og-card__domain'; dm.textContent = domain || '';
-          var au = document.createElement('div'); au.className = 'og-card__author'; au.textContent = author || '';
-          footer.appendChild(dm);
-          footer.appendChild(au);
+          var leftSide = document.createElement('div'); leftSide.className = 'og-card__domain';
+          var leftParts = [category, domain].filter(Boolean);
+          leftSide.textContent = leftParts.join(' · ');
+          var rightSide = document.createElement('div'); rightSide.className = 'og-card__author';
+          var rightParts = [dateStr, author].filter(Boolean);
+          rightSide.textContent = rightParts.join(' · ');
+          footer.appendChild(leftSide);
+          footer.appendChild(rightSide);
           body.appendChild(footer);
         }
 
@@ -465,63 +488,111 @@ document.addEventListener('DOMContentLoaded', function () {
           .finally(function(){ clearTimeout(timer); });
       };
 
+      // Filter state
+      var currentTagFilter = '';
+      var currentCategoryFilter = '';
+
       // Filter logic
-      var applyFilter = function(selected) {
-        var sel = (selected || '');
+      var applyFilters = function() {
         var cards = Array.from(container.querySelectorAll('.og-card'));
         cards.forEach(function(card){
           var tags = (card.dataset.tags || '').split(',').filter(Boolean);
-          var show = !sel || tags.includes(sel);
-          card.style.display = show ? '' : 'none';
+          var category = card.dataset.category || '';
+          var tagMatch = !currentTagFilter || tags.includes(currentTagFilter);
+          var catMatch = !currentCategoryFilter || category === currentCategoryFilter;
+          card.style.display = (tagMatch && catMatch) ? '' : 'none';
         });
-        var chips = container.querySelectorAll('.og-filter__chip');
-        chips.forEach(function(chip){
+        // Update tag filter chips
+        var tagChips = container.querySelectorAll('.og-filter--tags .og-filter__chip');
+        tagChips.forEach(function(chip){
           var val = (chip.dataset.tag || '');
-          if (val === sel) chip.classList.add('--active'); else chip.classList.remove('--active');
+          if (val === currentTagFilter) chip.classList.add('--active'); else chip.classList.remove('--active');
+        });
+        // Update category filter chips
+        var catChips = container.querySelectorAll('.og-filter--category .og-filter__chip');
+        catChips.forEach(function(chip){
+          var val = (chip.dataset.category || '');
+          if (val === currentCategoryFilter) chip.classList.add('--active'); else chip.classList.remove('--active');
         });
       };
 
-      // Insert filter bar immediately (no need to wait for fetches)
-      var insertFilterBar = function() {
-        if (!allTags.size) return;
-        var tags = Array.from(allTags).sort();
-        var filter = document.createElement('div');
-        filter.className = 'og-filter';
-        var title = document.createElement('span'); title.className = 'og-filter__title'; title.textContent = ''; filter.appendChild(title);
+      // Insert filter bars immediately (no need to wait for fetches)
+      var insertFilterBars = function() {
+        var wrapper = document.createElement('div');
+        wrapper.className = 'og-filters-wrapper';
 
-        var makeChip = function(label, value, active) {
+        // Category filter (Article, Presentation, Notes)
+        var categories = ['Article', 'Presentation', 'Notes'];
+        var catFilter = document.createElement('div');
+        catFilter.className = 'og-filter og-filter--category';
+
+        var makeCatChip = function(label, value, active) {
           var chip = document.createElement('button');
           chip.type = 'button';
           chip.className = 'og-chip og-filter__chip' + (active ? ' --active' : '');
-          chip.dataset.tag = (value || '');
+          chip.dataset.category = (value || '');
           chip.textContent = label;
           return chip;
         };
 
-        filter.appendChild(makeChip('All', '', true));
-        tags.forEach(function(tag){ filter.appendChild(makeChip(tag, tag, false)); });
+        catFilter.appendChild(makeCatChip('All', '', true));
+        categories.forEach(function(cat){ catFilter.appendChild(makeCatChip(cat, cat, false)); });
+        wrapper.appendChild(catFilter);
 
-        if (container.firstChild) container.insertBefore(filter, container.firstChild);
-        else container.appendChild(filter);
+        // Tag filter
+        if (allTags.size) {
+          var tags = Array.from(allTags).sort();
+          var tagFilter = document.createElement('div');
+          tagFilter.className = 'og-filter og-filter--tags';
 
-        // Click to filter via toolbar chips
-        filter.addEventListener('click', function(e){
-          var chip = e.target.closest ? e.target.closest('.og-filter__chip') : null;
-          if (chip) applyFilter(chip.dataset.tag || '');
+          var makeTagChip = function(label, value, active) {
+            var chip = document.createElement('button');
+            chip.type = 'button';
+            chip.className = 'og-chip og-filter__chip' + (active ? ' --active' : '');
+            chip.dataset.tag = (value || '');
+            chip.textContent = label;
+            return chip;
+          };
+
+          tagFilter.appendChild(makeTagChip('All', '', true));
+          tags.forEach(function(tag){ tagFilter.appendChild(makeTagChip(tag, tag, false)); });
+          wrapper.appendChild(tagFilter);
+        }
+
+        if (container.firstChild) container.insertBefore(wrapper, container.firstChild);
+        else container.appendChild(wrapper);
+
+        // Click to filter via category chips
+        wrapper.addEventListener('click', function(e){
+          var chip = e.target.closest ? e.target.closest('.og-filter--category .og-filter__chip') : null;
+          if (chip) {
+            currentCategoryFilter = chip.dataset.category || '';
+            applyFilters();
+          }
         });
 
-        // Clicking a card chip sets the filter
+        // Click to filter via tag chips
+        wrapper.addEventListener('click', function(e){
+          var chip = e.target.closest ? e.target.closest('.og-filter--tags .og-filter__chip') : null;
+          if (chip) {
+            currentTagFilter = chip.dataset.tag || '';
+            applyFilters();
+          }
+        });
+
+        // Clicking a card chip sets the tag filter
         container.addEventListener('click', function(e){
           var chip = e.target.closest ? e.target.closest('.og-card .og-chip') : null;
           if (chip && chip.dataset && chip.dataset.tag) {
             if (e.preventDefault) e.preventDefault();
             if (e.stopPropagation) e.stopPropagation();
-            applyFilter(chip.dataset.tag);
+            currentTagFilter = chip.dataset.tag;
+            applyFilters();
           }
         });
       };
 
-      insertFilterBar();
+      insertFilterBars();
 
       // Concurrency-limited processing of anchors
       var MAX_CONCURRENCY = 6;
@@ -537,14 +608,16 @@ document.addEventListener('DOMContentLoaded', function () {
         // Use per-link or global override if available
         var overrideImg = resolveImgOverride(url, el);
         var overrideAuthor = resolveAuthorOverride(url, el);
+        var dateStr = el.getAttribute('data-date') || '';
+        var category = el.__ogCategory || '';
 
         return fetchMeta(url).then(function(meta){
-          var card = toCard(meta, url, tagsArr, overrideImg, overrideAuthor);
+          var card = toCard(meta, url, tagsArr, overrideImg, overrideAuthor, dateStr, category);
           el.replaceWith(card);
         }).catch(function(){
           // If fetch fails but we have an override, still render a card
           if (overrideImg) {
-            var card = toCard({}, url, tagsArr, overrideImg, overrideAuthor);
+            var card = toCard({}, url, tagsArr, overrideImg, overrideAuthor, dateStr, category);
             el.replaceWith(card);
             return;
           }
