@@ -69,3 +69,10 @@ cards:
     image: "/assets/og/ml-for-anomaly-detection.png"
     domain: "docs.google.com"
     author: "Gianpi Colonna"
+
+  "https://docs.google.com/presentation/d/e/2PACX-1vS-pSZ2ea5BXvppuom1au6Se19IEk_7nPV5l9zfp22sQ4hM7vPeNsDWyi2GBCM2xg/pub?start=false&loop=false&delayms=3000&slide=id.p1":
+    title: "Working with Claude Code"
+    description: "An introduction and practical guide to working with Claude Code."
+    image: "/assets/og/claude_code.png"
+    domain: "docs.google.com"
+    author: "Gianpi Colonna"

@@ -6,6 +6,8 @@ permalink: /writing/
 
 [Practical Machine Learning](https://gcolonna.notion.site/practical-machine-learning){:.og-embed data-tags="AI & ML" data-date="Jan 2026" data-category="Notes"}
 
+[Working with Claude Code](https://docs.google.com/presentation/d/e/2PACX-1vS-pSZ2ea5BXvppuom1au6Se19IEk_7nPV5l9zfp22sQ4hM7vPeNsDWyi2GBCM2xg/pub?start=false&loop=false&delayms=3000&slide=id.p1){:.og-embed data-tags="AI & ML" data-date="Feb 2026" data-category="Presentation"}
+
 [AI-fairness](https://medium.com/data-science-collective/can-ai-ever-be-truly-fair-the-impossible-quest-for-algorithmic-fairness-72fcb6dfd210){:.og-embed data-tags="AI & ML, Philosophy" data-date="Apr 2025" data-category="Article"}
 
 [Intro To Kubernetes](https://docs.google.com/presentation/d/e/2PACX-1vRmqB0nU6X08jFBu1oQjPOGoq22OA0LbVOFn-cLyky_jzaUyoWRpzYsM4EQzzGBBQ/pub?start=false&loop=false&delayms=3000&slide=id.p1){:.og-embed data-tags="Infrastructure" data-image="/assets/og/intro-to-kubernetes.png" data-author="Gianpi Colonna" data-date="Jun 2025" data-category="Presentation"}
