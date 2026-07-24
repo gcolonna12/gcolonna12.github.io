@@ -48,6 +48,13 @@ cards:
     domain: "docs.google.com"
     author: "Gianpi Colonna"
 
+  "https://medium.com/data-science-collective/transparency-in-machine-learning-navigating-the-black-box-6b30b0b56f88":
+    title: "Transparency in Machine Learning: Navigating the Black Box"
+    description: "Exploring interpretability and transparency in machine learning models — navigating the black box."
+    image: "/assets/og/transparency-in-ml.png"
+    domain: "medium.com"
+    author: "Gianpi Colonna"
+
   "https://gcolonna.notion.site/practical-machine-learning":
     title: "Practical Machine Learning"
     description: "A catalog of practical machine learning design patterns."
@@ -75,4 +82,32 @@ cards:
     description: "An introduction and practical guide to working with Claude Code."
     image: "/assets/og/claude_code.png"
     domain: "docs.google.com"
+    author: "Gianpi Colonna"
+
+  "https://medium.com/@gianpiero.colonna/saint-augustine-and-saint-thomas-aquinas-a-brief-overview-e1aa3bc72627":
+    title: "Saint Augustine and Saint Thomas Aquinas — A Brief Overview"
+    description: "A brief overview of the thought of Saint Augustine and Saint Thomas Aquinas."
+    image: "/assets/og/thomas_augustine.png"
+    domain: "medium.com"
+    author: "Gianpi Colonna"
+
+  "https://medium.com/data-science-collective/reproducible-ml-training-sets-without-copying-data-4a9f92521a13":
+    title: "Reproducible ML Training Datasets Without Duplicating Data"
+    description: "How to build reproducible ML training sets without copying or duplicating data."
+    image: "/assets/og/reproducible-ml-training-sets.png"
+    domain: "medium.com"
+    author: "Gianpi Colonna"
+
+  "https://www.linkedin.com/posts/gianpi-colonna_tmux-git-worktree-activity-7468353381384781824-WhtN?utm_source=share&utm_medium=member_desktop&rcm=ACoAAB6hRHAB4FtAa4r6GIhqZGToquZzV1r3YeA":
+    title: "tmux + git worktrees (and Jujutsu) — A talk about old tools and parallel minds"
+    description: "A talk about old tools and parallel minds: tmux, git worktrees, and Jujutsu."
+    image: "/assets/og/tmux-worktrees.png"
+    domain: "linkedin.com"
+    author: "Gianpi Colonna"
+
+  "https://dev.to/gcolonna12/set-it-up-once-use-it-for-your-whole-career-107a?preview=5a7edc9381f8aec7816d3e7cc8d3ad7ac72ce742a663c8f5836dc8cfe08bda7449c0cee783f1bba20b369329fd123270b581dc675bc31de5924395f0":
+    title: "Set It Up Once, Use It for Your Whole Career"
+    description: "How to set up your dotfiles once and use them for your whole career."
+    image: "/assets/og/dotfiles.png"
+    domain: "dev.to"
     author: "Gianpi Colonna"
